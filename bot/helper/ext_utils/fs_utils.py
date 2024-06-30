@@ -56,7 +56,6 @@ async def clean_download(path):
 
 
 async def start_cleanup():
-    get_client().torrents_delete(torrent_hashes="all")
     try:
         await aiormtree('/usr/src/app/downloads/')
     except:
@@ -66,7 +65,6 @@ async def start_cleanup():
 
 def clean_all():
     aria2.remove_all(True)
-    get_client().torrents_delete(torrent_hashes="all")
     try:
         rmtree('/usr/src/app/downloads/')
     except:
