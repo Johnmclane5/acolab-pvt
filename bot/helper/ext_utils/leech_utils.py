@@ -104,7 +104,7 @@ async def get_audio_thumb(audio_file):
     if not await aiopath.exists(des_dir):
         await mkdir(des_dir)
     des_dir = ospath.join(des_dir, f"{time()}.jpg")
-    cmd = ["render", "-hide_banner", "-loglevel", "error", "-i", audio_file, "-an", "-vcodec", "copy", des_dir]
+    cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-i", audio_file, "-an", "-vcodec", "copy", des_dir]
     status = await create_subprocess_exec(*cmd, stderr=PIPE)
     if await status.wait() != 0 or not await aiopath.exists(des_dir):
         err = (await status.stderr.read()).decode().strip()
@@ -121,7 +121,7 @@ async def take_ss(video_file, duration=None, total=1, gen_ss=False):
     if duration == 0:
         duration = 3
     duration = duration - (duration * 2 / 100)
-    cmd = ["render", "-hide_banner", "-loglevel", "error", "-ss", "", "-i", video_file, "-vf", "thumbnail", "-frames:v", "1", des_dir]
+    cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-ss", "", "-i", video_file, "-vf", "thumbnail", "-frames:v", "1", des_dir]
     tasks = []
     tstamps = {}
     for eq_thumb in range(1, total+1):
@@ -161,7 +161,7 @@ async def split_file(path, size, file_, dirpath, split_size, listener, start_tim
         while i <= parts or start_time < duration - 4:
             parted_name = f"{base_name}.part{i:03}{extension}"
             out_path = ospath.join(dirpath, parted_name)
-            cmd = ["render", "-hide_banner", "-loglevel", "error", "-ss", str(start_time), "-i", path, "-fs", str(split_size), "-map", "0", "-map_chapters", "-1", "-async", "1", "-strict", "-2", "-c", "copy", out_path]
+            cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-ss", str(start_time), "-i", path, "-fs", str(split_size), "-map", "0", "-map_chapters", "-1", "-async", "1", "-strict", "-2", "-c", "copy", out_path]
             if not multi_streams:
                 del cmd[10]
                 del cmd[10]
