@@ -2,6 +2,9 @@
 from asyncio import wait_for, Event, wrap_future
 from aiofiles.os import path as aiopath
 from aiofiles import open as aiopen
+
+
+
 from configparser import ConfigParser
 from pyrogram.handlers import CallbackQueryHandler
 from pyrogram.filters import regex, user
@@ -193,7 +196,7 @@ class RcloneList:
             self.item_type == itype
         elif self.list_status == 'rcu':
             self.item_type == '--dirs-only'
-        cmd = ['zcl', 'lsjson', self.item_type, '--fast-list', '--no-mimetype',
+        cmd = ['rclone', 'lsjson', self.item_type, '--fast-list', '--no-mimetype',
                '--no-modtime', '--config', self.config_path, f"{self.remote}{self.path}"]
         if self.is_cancelled:
             return
