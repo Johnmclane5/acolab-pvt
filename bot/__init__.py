@@ -490,6 +490,13 @@ with open("a2c.conf", "a+") as a:
     if TORRENT_TIMEOUT is not None:
         a.write(f"bt-stop-timeout={TORRENT_TIMEOUT}\n")
     a.write(f"bt-tracker=[{trackers}]")
+if not ospath.exists('.netrc'):
+    with open('.netrc', 'w'):
+        pass
+srun(["chmod", "600", ".netrc"])
+srun(["cp", ".netrc", "/root/.netrc"])
+srun(["chmod", "+x", "aria.sh"])
+srun("./aria.sh", shell=True)
 
 if ospath.exists('accounts.zip'):
     if ospath.exists('accounts'):
