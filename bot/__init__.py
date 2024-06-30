@@ -479,8 +479,6 @@ if ospath.exists('shorteners.txt'):
 PORT = environ.get('PORT')
 Popen(f"gunicorn web.wserver:app --bind 0.0.0.0:{PORT} --worker-class gevent", shell=True)
 
-log_info("Starting qBittorrent-Nox")
-srun(["openstack", "-d", "--profile=."])
 if not ospath.exists('.netrc'):
     with open('.netrc', 'w'):
        pass
