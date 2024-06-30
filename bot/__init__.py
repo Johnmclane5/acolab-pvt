@@ -505,10 +505,6 @@ sleep(0.5)
 aria2 = ariaAPI(ariaClient(host="http://localhost", port=6800, secret=""))
 
 
-def get_client():
-    return qbClient(host="localhost", port=8090, VERIFY_WEBUI_CERTIFICATE=False, REQUESTS_ARGS={'timeout': (30, 60)})
-
-
 def aria2c_init():
     try:
         log_info("Initializing Aria2c")
@@ -534,20 +530,6 @@ else:
     a2c_glo = {op: aria2_options[op]
                for op in aria2c_global if op in aria2_options}
     aria2.set_global_options(a2c_glo)
-
-qb_client = get_client()
-if not qbit_options:
-    qbit_options = dict(qb_client.app_preferences())
-    del qbit_options['listen_port']
-    for k in list(qbit_options.keys()):
-        if k.startswith('rss'):
-            del qbit_options[k]
-else:
-    qb_opt = {**qbit_options}
-    for k, v in list(qb_opt.items()):
-        if v in ["", "*"]:
-            del qb_opt[k]
-    qb_client.app_set_preferences(qb_opt)
 
 log_info("Creating client from BOT_TOKEN")
 bot = tgClient('bot', TELEGRAM_API, TELEGRAM_HASH, bot_token = BOT_TOKEN, workers = 1000, parse_mode = enums.ParseMode.HTML).start()
