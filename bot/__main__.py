@@ -243,10 +243,8 @@ async def search_images():
 help_string = f'''
 NOTE: Try each command without any arguments to see more details.
 /{BotCommands.MirrorCommand[0]} or /{BotCommands.MirrorCommand[1]}: Starts mirroring to Google Drive.
-/{BotCommands.QbMirrorCommand[0]} or /{BotCommands.QbMirrorCommand[1]}: Starts mirroring to Google Drive using qBittorrent.
 /{BotCommands.YtdlCommand[0]} or /{BotCommands.YtdlCommand[1]}: Mirrors links supported by yt-dlp.
 /{BotCommands.LeechCommand[0]} or /{BotCommands.LeechCommand[1]}: Starts leeching to Telegram.
-/{BotCommands.QbLeechCommand[0]} or /{BotCommands.QbLeechCommand[1]}: Starts leeching using qBittorrent.
 /{BotCommands.YtdlLeechCommand[0]} or /{BotCommands.YtdlLeechCommand[1]}: Leeches links supported by yt-dlp.
 /{BotCommands.CloneCommand} [drive_url]: Copies files/folders to Google Drive.
 /{BotCommands.CountCommand} [drive_url]: Counts files/folders in Google Drive.
@@ -257,7 +255,6 @@ NOTE: Try each command without any arguments to see more details.
 /{BotCommands.CancelMirror}: Cancels task by gid or reply.
 /{BotCommands.CancelAllCommand} [query]: Cancels all [status] tasks.
 /{BotCommands.ListCommand} [query]: Searches in Google Drive(s).
-/{BotCommands.SearchCommand} [query]: Searches for torrents with API.
 /{BotCommands.StatusCommand}: Shows status of all downloads.
 /{BotCommands.StatsCommand}: Shows stats of the machine hosting the bot.
 /{BotCommands.PingCommand}: Checks how long it takes to ping the bot (Only Owner & Sudo).
