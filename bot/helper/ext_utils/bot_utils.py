@@ -17,7 +17,6 @@ from concurrent.futures import ThreadPoolExecutor
 from aiohttp import ClientSession as aioClientSession
 from psutil import virtual_memory, cpu_percent, disk_usage
 from requests import get as rget
-from mega import MegaApi
 from pyrogram.enums import ChatType
 from pyrogram.types import BotCommand
 from pyrogram.errors import PeerIdInvalid
