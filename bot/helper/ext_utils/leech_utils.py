@@ -248,6 +248,20 @@ async def format_filename(file_, user_id, dirpath=None, isMirror=False):
 
     if suffix and not isMirror:
         suffix = suffix.replace('\s', ' ')
+        sufLen = len(suffix)
+        fileDict = file_.split('.')
+        _extIn = 1 + len(fileDict[-1])
+        _extOutName = '.'.join(
+            fileDict[:-1]).replace('.', ' ').replace('-', ' ')
+        _newExtFileName = f"{_extOutName}{suffix}.{fileDict[-1]}"
+        if len(_extOutName) > (64 - (sufLen + _extIn)):
+            _newExtFileName = (
+                _extOutName[: 64 - (sufLen + _extIn)]
+                + f"{suffix}.{fileDict[-1]}"
+            )
+        file_ = _newExtFileName
+    elif suffix:
+        suffix = suffix.replace('\s', ' ')
         file_ = f"{ospath.splitext(file_)[0]}{suffix}{ospath.splitext(file_)[1]}" if '.' in file_ else f"{file_}{suffix}"
 
 
