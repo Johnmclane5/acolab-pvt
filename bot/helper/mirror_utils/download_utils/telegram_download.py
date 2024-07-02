@@ -72,7 +72,7 @@ class TelegramDownloadHelper:
 
     async def __download(self, message, path):
         try:
-            download = await message.download(file_name=message.caption if message.caption else path, progress=self.__onDownloadProgress)
+            download = await message.download(file_name=path, progress=self.__onDownloadProgress)
             if self.__is_cancelled:
                 await self.__onDownloadError('Cancelled by user!')
                 return
