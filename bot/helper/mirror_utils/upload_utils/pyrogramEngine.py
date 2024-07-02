@@ -185,7 +185,7 @@ class TgUploader:
 
     async def __prepare_file(self, prefile_, dirpath):
         file_, cap_mono = await format_filename(prefile_, self.__user_id, dirpath)
-        LOGGER.info(f"{file_} {cap_mono} {prefile_})
+        LOGGER.info(f"{file_} {cap_mono} {prefile_}")
         if prefile_ != file_:
             if self.__listener.seed and not self.__listener.newDir and not dirpath.endswith("/splited_files_mltb"):
                 dirpath = f'{dirpath}/copied_mltb'
