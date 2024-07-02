@@ -100,7 +100,7 @@ class TelegramDownloadHelper:
 
             if download:
                 if filename == "":
-                    name = message.caption if hasattr(message, 'caption') else 'None'
+                    name = media.file_name if hasattr(media, 'file_name') else 'None'
                 else:
                     name = filename
                     path = path + name
