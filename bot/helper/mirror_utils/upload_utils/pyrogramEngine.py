@@ -9,6 +9,7 @@ from aiofiles.os import remove as aioremove, path as aiopath, rename as aiorenam
 from os import walk, path as ospath
 from time import time
 from PIL import Image
+from pyrogram import enums
 from pyrogram.types import InputMediaVideo, InputMediaDocument, InlineKeyboardMarkup
 from pyrogram.errors import FloodWait, RPCError, PeerIdInvalid, MessageNotModified, ChannelInvalid
 from asyncio import sleep
@@ -128,7 +129,18 @@ class TgUploader:
                 for channel_id in self.__ldump.split():
                     chat = await chat_info(channel_id)
                     try:
-                        dump_copy = await bot.copy_message(chat_id=chat.id, from_chat_id=self.__sent_msg.chat.id, message_id=self.__sent_msg.id)
+                        if self.__sent_msg.video:
+                            video_file_id = self.__sent_msg.video.file_id
+                            bold_caption = f"<code>{self.__sent_msg.caption}</code>" if self.__sent_msg.caption else None
+                            
+                        dump_copy = await bot.send_video(
+                            chat_id=chat.id, 
+                            video=video_file_id,
+                            caption=bold_caption,
+                            parse_mode = enums.ParseMode.HTML,
+                            has_spoiler=True,
+                            reply_markup=self.__sent_msg.reply_markup if self.__has_buttons else None  
+                        )
                         if self.__has_buttons:
                             rply = self.__sent_msg.reply_markup
                             try:
@@ -384,215 +396,4 @@ class TgUploader:
                                                                        document=self.__up_path,
                                                                        thumb=thumb,
                                                                        caption = new_cap_mono,
-                                                                       force_document=True,
-                                                                       disable_notification=True,
-                                                                       progress=self.__upload_progress,
-                                                                       reply_markup=buttons)
-                
-                if self.__prm_media and (self.__has_buttons or not self.__leechmsg):
-                    try:
-                        self.__sent_msg = await bot.copy_message(nrml_media.chat.id, nrml_media.chat.id, nrml_media.id, reply_to_message_id=self.__sent_msg.id, reply_markup=buttons)
-                        if self.__sent_msg: await deleteMessage(nrml_media)
-                    except:
-                        self.__sent_msg = nrml_media
-                else:
-                    self.__sent_msg = nrml_media
-            elif is_video:
-                key = 'videos'
-                duration = (await get_media_info(self.__up_path))[0]
-                if thumb is None:
-                    if tmdb_poster_url:
-                        thumb = await self.get_custom_thumb(tmdb_poster_url)
-                        LOGGER.info("Got the poster")
-                    else:
-                        thumb = await take_ss(self.__up_path, duration)
-                        LOGGER.info("Poster not found")
-                if thumb is not None:
-                    with Image.open(thumb) as img:
-                        width, height = img.size
-                else:
-                    width = 480
-                    height = 320
-                if not self.__up_path.upper().endswith(('MKV', 'MP4')):
-                    dirpath, file_ = self.__up_path.rsplit('/', 1)
-                    if self.__listener.seed and not self.__listener.newDir and not dirpath.endswith("/splited_files"):
-                        dirpath = f"{dirpath}/copied"
-                        await makedirs(dirpath, exist_ok=True)
-                        new_path = ospath.join(
-                            dirpath, f"{ospath.splitext(file_)[0]}.mp4")
-                        self.__up_path = await copy(self.__up_path, new_path)
-                    else:
-                        new_path = f"{ospath.splitext(self.__up_path)[0]}.mp4"
-                        await aiorename(self.__up_path, new_path)
-                        self.__up_path = new_path
-                if self.__is_cancelled:
-                    return
-                buttons = await self.__buttons(self.__up_path, is_video)
-                
-                nrml_media = await self.__client.send_video(chat_id=self.__sent_msg.chat.id,
-                                                                    reply_to_message_id=self.__sent_msg.id,
-                                                                    video=self.__up_path,
-                                                                    caption= new_cap_mono,
-                                                                    duration=duration,
-                                                                    width=width,
-                                                                    height=height,
-                                                                    thumb=thumb,
-                                                                    supports_streaming=True,
-                                                                    disable_notification=True,
-                                                                    progress=self.__upload_progress,
-                                                                    reply_markup=buttons)
-                if self.__prm_media and (self.__has_buttons or not self.__leechmsg):
-                    try:
-                        self.__sent_msg = await bot.copy_message(nrml_media.chat.id, nrml_media.chat.id, nrml_media.id, reply_to_message_id=self.__sent_msg.id, reply_markup=buttons)
-                        if self.__sent_msg: await deleteMessage(nrml_media)
-                    except:
-                        self.__sent_msg = nrml_media
-                else:
-                    self.__sent_msg = nrml_media
-            elif is_audio:
-                key = 'audios'
-                duration, artist, title = await get_media_info(self.__up_path)
-                if self.__is_cancelled:
-                    return
-                self.__sent_msg = await self.__client.send_audio(chat_id=self.__sent_msg.chat.id,
-                                                                    reply_to_message_id=self.__sent_msg.id,
-                                                                    audio=self.__up_path,
-                                                                    caption= cap_mono,
-                                                                    duration=duration,
-                                                                    performer=artist,
-                                                                    title=title,
-                                                                    thumb=thumb,
-                                                                    disable_notification=True,
-                                                                    progress=self.__upload_progress,
-                                                                    reply_markup=await self.__buttons(self.__up_path))
-            else:
-                key = 'photos'
-                if self.__is_cancelled:
-                    return
-                self.__sent_msg = await self.__client.send_photo(chat_id=self.__sent_msg.chat.id,
-                                                                    reply_to_message_id=self.__sent_msg.id,
-                                                                    photo=self.__up_path,
-                                                                    caption=cap_mono,
-                                                                    disable_notification=True,
-                                                                    progress=self.__upload_progress,
-                                                                    reply_markup=await self.__buttons(self.__up_path))
-
-            if not self.__is_cancelled and self.__media_group and (self.__sent_msg.video or self.__sent_msg.document):
-                key = 'documents' if self.__sent_msg.document else 'videos'
-                if match := re_match(r'.+(?=\.0*\d+$)|.+(?=\.part\d+\..+)', self.__up_path):
-                    pname = match.group(0)
-                    if pname in self.__media_dict[key].keys():
-                        self.__media_dict[key][pname].append(self.__sent_msg)
-                    else:
-                        self.__media_dict[key][pname] = [self.__sent_msg]
-                    msgs = self.__media_dict[key][pname]
-                    if len(msgs) == 10:
-                        await self.__send_media_group(pname, key, msgs)
-                    else:
-                        self.__last_msg_in_group = True
-            await self.__copy_file()
-
-            if self.__thumb is None and thumb is not None and await aiopath.exists(thumb):
-                await aioremove(thumb)
-        except FloodWait as f:
-            LOGGER.warning(str(f))
-            await sleep(f.value)
-        except Exception as err:
-            if self.__thumb is None and thumb is not None and await aiopath.exists(thumb):
-                await aioremove(thumb)
-            LOGGER.error(f"{format_exc()}. Path: {self.__up_path}")
-            if 'Telegram says: [400' in str(err) and key != 'documents':
-                LOGGER.error(f"Retrying As Document. Path: {self.__up_path}")
-                return await self.__upload_file(cap_mono, file, True)
-            raise err
-                     
-    @property
-    def speed(self):
-        try:
-            return self.__processed_bytes / (time() - self.__start_time)
-        except:
-            return 0
-
-    @property
-    def processed_bytes(self):
-        return self.__processed_bytes
-
-    async def cancel_download(self):
-        self.__is_cancelled = True
-        LOGGER.info(f"Cancelling Upload: {self.name}")
-        await self.__listener.onUploadError('Cancelled by user!')
-
-async def extract_movie_info(caption):
-    try:
-        regex = re.compile(r'(.+?)(\d{4})')
-        match = regex.search(caption)
-
-        if match:
-             movie_name = match.group(1).replace('.', ' ').strip()
-             release_year = match.group(2)
-             return movie_name, release_year
-    except Exception as e:
-        print(e)
-    return None, None
-
-async def get_movie_poster(movie_name, release_year):
-    TMDB_API = config_dict['TMDB_API_KEY']
-    tmdb_search_url = f'https://api.themoviedb.org/3/search/multi?api_key={TMDB_API}&query={movie_name}'
-    try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(tmdb_search_url) as search_response:
-                search_data = await search_response.json()
-
-                if search_data['results']:
-                    # Filter results based on release year and first air date
-                    matching_results = [
-                        result for result in search_data['results']
-                        if ('release_date' in result and result['release_date'][:4] == str(release_year)) or
-                        ('first_air_date' in result and result['first_air_date'][:4] == str(
-                            release_year))
-                    ]
-
-                    if matching_results:
-                        result = matching_results[0]
-
-                        # Fetch additional details using movie ID
-                        movie_id = result['id']
-                        media_type = result['media_type']
-
-                        tmdb_movie_url = f'https://api.themoviedb.org/3/{media_type}/{movie_id}/images?api_key={TMDB_API}&language=en-US&include_image_language=en'
-
-                        async with session.get(tmdb_movie_url) as movie_response:
-                            movie_data = await movie_response.json()
-
-                        # Use the first backdrop image path from either detailed data or result
-                        backdrop_path = None
-                        #if 'backdrops' in movie_data and movie_data['backdrops']:
-                            #backdrop_path = movie_data['backdrops'][0]['file_path']
-                        if 'backdrop_path' in result and result['backdrop_path']:
-                            backdrop_path = result['backdrop_path']
-
-                        # If both backdrop_path and poster_path are not available, use poster_path
-                        if not backdrop_path and 'poster_path' in result and result['poster_path']:
-                            poster_path = result['poster_path']
-                            poster_url = f"https://image.tmdb.org/t/p/original{poster_path}"
-                            return poster_url
-                        elif backdrop_path:
-                            backdrop_url = f"https://image.tmdb.org/t/p/original{backdrop_path}"
-                            return backdrop_url
-                        else:
-                            print(
-                                "Failed to obtain backdrop and poster paths from movie_data and result")
-
-                    else:
-                        print(
-                            f"No matching results found for movie: {movie_name} ({release_year})")
-
-                else:
-                    print(f"No results found for movie: {movie_name}")
-
-    except Exception as e:
-        print(f"Error fetching TMDB data: {e}")
-
-    return None
-
-
+    
