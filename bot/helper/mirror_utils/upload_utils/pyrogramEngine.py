@@ -87,7 +87,7 @@ class TgUploader:
             return des_dir
         return None
 
-    async def __buttons(self, up_path, is_video=False, cap_mono):
+    async def __buttons(self, up_path, cap_mono, is_video=False):
         buttons = ButtonMaker()
         try:
             if is_video and bool(self.__leech_utils['screenshots']):
@@ -379,7 +379,7 @@ class TgUploader:
                         thumb = await take_ss(self.__up_path, None)
                 if self.__is_cancelled:
                     return
-                buttons = await self.__buttons(self.__up_path, is_video, new_cap_mono)
+                buttons = await self.__buttons(self.__up_path, new_cap_mono, is_video)
                 nrml_media = await self.__client.send_document(chat_id=self.__sent_msg.chat.id,
                                                                        reply_to_message_id=self.__sent_msg.id,
                                                                        document=self.__up_path,
