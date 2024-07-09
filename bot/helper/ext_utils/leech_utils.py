@@ -293,9 +293,9 @@ async def format_filename(file_, user_id, dirpath=None, isMirror=False):
     return file_, cap_mono
 
 
-async def get_ss(up_path, ss_no):
+async def get_ss(up_path, ss_no, cap_mono):
     thumbs_path, tstamps = await take_ss(up_path, total=ss_no, gen_ss=True)
-    th_html = f"<h4>{ospath.basename(up_path)}</h4><br><b>Total Screenshots:</b> {ss_no}<br><br>"
+    th_html = f"<h4>{cap_mono}</h4><br><b>Total Screenshots:</b> {ss_no}<br><br>"
     th_html += ''.join(f'<img src="https://graph.org{upload_file(ospath.join(thumbs_path, thumb))[0]}"><br><pre>Screenshot at {tstamps[thumb]}</pre>' for thumb in natsorted(await listdir(thumbs_path)))
     await aiormtree(thumbs_path)
     link_id = (await telegraph.create_page(title="ScreenShots", content=th_html))["path"]
