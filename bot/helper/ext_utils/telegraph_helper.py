@@ -76,6 +76,6 @@ class TelegraphHelper:
         return
 
 
-telegraph = TelegraphHelper('HR-MiRROr', 'https://t.me/HR_Mirror')
+telegraph = TelegraphHelper('HR-MiRROr', 'https://t.me/thetgflix')
 
 bot_loop.run_until_complete(telegraph.create_account())
