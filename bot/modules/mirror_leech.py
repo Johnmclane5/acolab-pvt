@@ -71,7 +71,7 @@ async def _mirror_leech(client, message, isQbit=False, isLeech=False, sameDir=No
     index_link   = args['-index']
     ss           = args['-ss']
     multi        = int(i) if i.isdigit() else 0
-    sshots       = min(int(ss) if ss.isdigit() else 0, 10)
+    sshots       = min(int(5), 10)
     bulk_start   = 0
     bulk_end     = 0
     ratio        = None
