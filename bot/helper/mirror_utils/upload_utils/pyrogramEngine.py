@@ -129,18 +129,7 @@ class TgUploader:
                 for channel_id in self.__ldump.split():
                     chat = await chat_info(channel_id)
                     try:
-                        if self.__sent_msg.video:
-                            video_file_id = self.__sent_msg.video.file_id
-                            bold_caption = f"<code>{self.__sent_msg.caption}</code>" if self.__sent_msg.caption else None
-                            
-                        dump_copy = await bot.send_video(
-                            chat_id=chat.id, 
-                            video=video_file_id,
-                            caption=bold_caption,
-                            parse_mode = enums.ParseMode.HTML,
-                            has_spoiler=True,
-                            reply_markup=self.__sent_msg.reply_markup if self.__has_buttons else None  
-                        )
+                        dump_copy = await bot.copy_message(chat_id=chat.id, from_chat_id=self.__sent_msg.chat.id, message_id=self.__sent_msg.id)
                         if self.__has_buttons:
                             rply = self.__sent_msg.reply_markup
                             try:
