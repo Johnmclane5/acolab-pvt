@@ -42,7 +42,7 @@ async def gen_mediainfo(message, link=None, media=None, mmsg=None):
                     async with aiopen(des_path, "ab") as f:
                         await f.write(chunk)
         stdout, _, _ = await cmd_exec(ssplit(f'mediainfo "{des_path}"'))
-        tc = f"<h4>{message.caption}</h4><br><br>"
+        tc = f"<h4>{mmsg.caption}</h4><br><br>"
         if len(stdout) != 0:
             tc += parseinfo(stdout)
     except Exception as e:
