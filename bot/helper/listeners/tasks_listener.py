@@ -35,7 +35,7 @@ from bot.helper.ext_utils.db_handler import DbManager
 
 
 class MirrorLeechListener:
-    def __init__(self, message, compress=False, extract=False, isQbit=False, isLeech=False, tag=None, select=False, seed=False, sameDir=None, rcFlags=None, upPath=None, isClone=False, join=False, isYtdlp=False, drive_id=None, index_link=None, leech_utils={}):
+    def __init__(self, message, compress=False, extract=False, isQbit=False, isLeech=False, tag=None, select=False, seed=False, sameDir=None, rcFlags=None, upPath=None, isClone=False, join=False, isYtdlp=False, drive_id=None, source_url=None, index_link=None, leech_utils={}):
         if sameDir is None:
             sameDir = {}
         self.message = message
@@ -64,6 +64,7 @@ class MirrorLeechListener:
         self.upload_details = {}
         self.__setModeEng()
         self.drive_id = drive_id
+        self.source_url = source_url
         self.index_link = index_link
         self.leech_utils = leech_utils
 
@@ -338,7 +339,7 @@ class MirrorLeechListener:
             for s in m_size:
                 size = size - s
             LOGGER.info(f"Leech Name: {up_name}")
-            tg = TgUploader(up_name, up_dir, self)
+            tg = TgUploader(up_name, up_dir, self, self.source_url)
             tg_upload_status = TelegramStatus(
                 tg, size, self.message, gid, 'up', self.upload_details)
             async with download_dict_lock:
