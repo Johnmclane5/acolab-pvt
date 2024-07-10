@@ -567,10 +567,10 @@ async def get_movie_poster(movie_name, release_year):
 
                         # Use the first backdrop image path from either detailed data or result
                         backdrop_path = None
-                        if 'backdrops' in movie_data and movie_data['backdrops']:
+                        if 'posters' in movie_data and movie_data['posters']:
+                            backdrop_path = movie_data['posters'][0]['file_path']
+                        elif 'backdrops' in movie_data and movie_data['backdrops']:
                             backdrop_path = movie_data['backdrops'][0]['file_path']
-                        elif 'backdrop_path' in result and result['backdrop_path']:
-                            backdrop_path = result['backdrop_path']
                         if backdrop_path:
                             backdrop_url = f"https://image.tmdb.org/t/p/original{backdrop_path}"
                             return backdrop_url
