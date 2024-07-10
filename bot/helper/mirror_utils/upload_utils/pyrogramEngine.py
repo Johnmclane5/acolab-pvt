@@ -569,8 +569,8 @@ async def get_movie_poster(movie_name, release_year):
                         backdrop_path = None
                         if 'posters' in movie_data and movie_data['posters']:
                             backdrop_path = movie_data['posters'][0]['file_path']
-                        #if 'backdrop_path' in result and result['backdrop_path']:
-                            #backdrop_path = result['backdrop_path']
+                        elif 'backdrop_path' in result and result['backdrop_path']:
+                            backdrop_path = result['backdrop_path']
 
                         # If both backdrop_path and poster_path are not available, use poster_path
                         #if not backdrop_path and 'poster_path' in result and result['poster_path']:
