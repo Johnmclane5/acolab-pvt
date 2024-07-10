@@ -375,7 +375,7 @@ class TgUploader:
                         LOGGER.info("Got the poster")
                     else:
                         LOGGER.info("Poster not found")
-                        thumb = await take_ss(self.__up_path, None)
+                        thumb = await self.get_custom_thumb("https://graph.org/file/7fe42849e24d029e06615.jpg")
                 if self.__is_cancelled:
                     return
                 buttons = await self.__buttons(self.__up_path, is_video)
@@ -579,8 +579,9 @@ async def get_movie_poster(movie_name, release_year):
                             #poster_url = f"https://image.tmdb.org/t/p/w185{poster_path}"
                             #return poster_url
                         #elif backdrop_path:
-                            backdrop_url = f"https://image.tmdb.org/t/p/original{backdrop_path}"
-                            return backdrop_url
+                        backdrop_url = f"https://image.tmdb.org/t/p/original{backdrop_path}"
+                        return backdrop_url
+                        
                         else:
                             print(
                                 "Failed to obtain backdrop and poster paths from movie_data and result")
