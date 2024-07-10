@@ -571,16 +571,9 @@ async def get_movie_poster(movie_name, release_year):
                             backdrop_path = movie_data['posters'][0]['file_path']
                         elif 'backdrop_path' in result and result['backdrop_path']:
                             backdrop_path = result['backdrop_path']
-
-                        # If both backdrop_path and poster_path are not available, use poster_path
-                        #if not backdrop_path and 'poster_path' in result and result['poster_path']:
-                        #if 'poster_path' in result:
-                            #poster_path = result['poster_path']
-                            #poster_url = f"https://image.tmdb.org/t/p/w185{poster_path}"
-                            #return poster_url
-                        #elif backdrop_path:
-                        backdrop_url = f"https://image.tmdb.org/t/p/original{backdrop_path}"
-                        return backdrop_url
+                            
+                            backdrop_url = f"https://image.tmdb.org/t/p/original{backdrop_path}"
+                            return backdrop_url
                         
                         else:
                             print(
